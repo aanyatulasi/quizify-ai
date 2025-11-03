@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizify AI - Smart Quiz Generator</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Quizify AI</h1>
+            <p class="subtitle">Generate and take smart quizzes on any topic</p>
+        </header>
+
+        <main>
+            <div class="quiz-setup" id="setup">
+                <div class="input-group">
+                    <input type="text" id="topic" placeholder="Enter a topic (e.g., World History, JavaScript, Biology)" required>
+                    <div class="voice-controls">
+                        <button id="voice-input-btn" class="btn-icon" title="Voice input">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                                <line x1="12" y1="19" x2="12" y2="23"></line>
+                                <line x1="8" y1="23" x2="16" y2="23"></line>
+                            </svg>
+                        </button>
+                        <div id="listening-indicator" class="listening-indicator hidden">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+                    <button id="start-btn" class="btn">Generate Quiz</button>
+                </div>
+                <div class="options">
+                    <select id="difficulty">
+                        <option value="easy">Easy</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                    <select id="question-count">
+                        <option value="5">5 Questions</option>
+                        <option value="10" selected>10 Questions</option>
+                        <option value="15">15 Questions</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="quiz-container hidden" id="quiz">
+                <div class="quiz-header">
+                    <div class="timer" id="timer">Time: 05:00</div>
+                    <div class="progress">
+                        <span id="current-question">1</span> / <span id="total-questions">10</span>
+                    </div>
+                </div>
+                
+                <div class="question-container">
+                    <h2 id="question">Question will appear here</h2>
+                    <div id="options" class="options-container">
+                        <!-- Options will be inserted here by JavaScript -->
+                    </div>
+                </div>
+
+                <div class="navigation">
+                    <button id="prev-btn" class="btn btn-secondary" disabled>Previous</button>
+                    <button id="next-btn" class="btn">Next</button>
+                    <button id="submit-btn" class="btn btn-primary hidden">Submit Quiz</button>
+                </div>
+            </div>
+
+            <div class="results hidden" id="results">
+                <h2>Quiz Results</h2>
+                <div class="score">Your score: <span id="score">0</span>/<span id="total">0</span></div>
+                <div class="feedback" id="feedback"></div>
+                <button id="retry-btn" class="btn">Try Another Quiz</button>
+                <button id="leaderboard-btn" class="btn btn-secondary">View Leaderboard</button>
+            </div>
+
+            <div class="leaderboard hidden" id="leaderboard">
+                <h2>Leaderboard</h2>
+                <div id="scores-list">
+                    <!-- Leaderboard entries will be inserted here -->
+                </div>
+                <button id="back-to-results" class="btn">Back to Results</button>
+            </div>
+        </main>
+    </div>
+
+    <script src="voice.js" type="module"></script>
+    <script src="quiz.js" type="module"></script>
+    <script src="ui.js" type="module"></script>
+    <script src="leaderboard.js" type="module"></script>
+</body>
+</html>
