@@ -21,7 +21,28 @@ class QuizUI {
         this.totalScoreElement = document.getElementById('total');
         this.feedbackElement = document.getElementById('feedback');
         this.scoresListElement = document.getElementById('scores-list');
-        
+        this.voiceInputButton = document.getElementById('voice-input-btn');
+        this.listeningIndicator = document.getElementById('listening-indicator');
+        this.questionContainer = document.querySelector('.question-container');
+
+        const nav = document.querySelector('.navigation');
+        if (nav && !document.getElementById('speak-btn')) {
+            const speakBtn = document.createElement('button');
+            speakBtn.id = 'speak-btn';
+            speakBtn.className = 'btn btn-secondary';
+            speakBtn.textContent = 'Speak Answer 🎙️';
+            nav.insertBefore(speakBtn, this.nextButton);
+        }
+        if (nav && !document.getElementById('end-btn')) {
+            const endBtn = document.createElement('button');
+            endBtn.id = 'end-btn';
+            endBtn.className = 'btn btn-primary';
+            endBtn.textContent = 'End Quiz ❌';
+            nav.appendChild(endBtn);
+        }
+        this.speakButton = document.getElementById('speak-btn');
+        this.endButton = document.getElementById('end-btn');
+
         this.initializeEventListeners();
     }
 
@@ -36,13 +57,19 @@ class QuizUI {
         this.retryButton?.addEventListener('click', () => this.retryQuiz());
         this.leaderboardButton?.addEventListener('click', () => this.showLeaderboard());
         this.backToResultsButton?.addEventListener('click', () => this.showResults());
-        
+        this.speakButton?.addEventListener('click', () => this.speakCurrentAnswer());
+        this.endButton?.addEventListener('click', () => this.endQuizEarly());
+        this.nextButton && (this.nextButton.textContent = 'Next ➡️');
+        this.submitButton && (this.submitButton.textContent = 'End Quiz ❌');
+
         // Voice control for questions
         document.addEventListener('questionShown', (e) => {
             if (e.detail.question) {
                 this.readQuestion(e.detail.question);
             }
         });
+
+        this.voiceInputButton?.addEventListener('click', () => this.toggleVoiceInput());
     }
 
     async startQuiz() {
@@ -119,6 +146,12 @@ class QuizUI {
 
         // Dispatch event for voice reading
         document.dispatchEvent(new CustomEvent('questionShown', { detail: { question } }));
+
+        if (this.questionContainer) {
+            this.questionContainer.classList.remove('animate-in');
+            void this.questionContainer.offsetWidth;
+            this.questionContainer.classList.add('animate-in');
+        }
     }
 
     renderMCQ(question) {
@@ -209,23 +242,39 @@ class QuizUI {
             return;
         }
         
-        // Submit answer
         quizGenerator.submitAnswer(currentQuestion.id, userAnswer);
         
-        // Move to next question or show results
-        const nextQuestion = quizGenerator.nextQuestion();
-        if (nextQuestion) {
-            this.showQuestion(quizGenerator.currentQuestionIndex);
-        } else {
-            this.showResults();
+        if (this.questionContainer) {
+            this.questionContainer.classList.remove('animate-in');
+            this.questionContainer.classList.add('animate-out-left');
         }
+        setTimeout(() => {
+            const nextQuestion = quizGenerator.nextQuestion();
+            if (this.questionContainer) {
+                this.questionContainer.classList.remove('animate-out-left');
+            }
+            if (nextQuestion) {
+                this.showQuestion(quizGenerator.currentQuestionIndex);
+            } else {
+                this.showResults();
+            }
+        }, 180);
     }
 
     showPreviousQuestion() {
-        const prevQuestion = quizGenerator.previousQuestion();
-        if (prevQuestion) {
-            this.showQuestion(quizGenerator.currentQuestionIndex);
+        if (this.questionContainer) {
+            this.questionContainer.classList.remove('animate-in');
+            this.questionContainer.classList.add('animate-out-right');
         }
+        setTimeout(() => {
+            const prevQuestion = quizGenerator.previousQuestion();
+            if (this.questionContainer) {
+                this.questionContainer.classList.remove('animate-out-right');
+            }
+            if (prevQuestion) {
+                this.showQuestion(quizGenerator.currentQuestionIndex);
+            }
+        }, 180);
     }
 
     getUserAnswer(question) {
@@ -257,6 +306,10 @@ class QuizUI {
         
         // Submit final answer
         quizGenerator.submitAnswer(currentQuestion.id, userAnswer);
+        this.showResults();
+    }
+
+    endQuizEarly() {
         this.showResults();
     }
 
@@ -338,6 +391,22 @@ class QuizUI {
         voiceController.speak(textToRead);
     }
 
+    speakCurrentAnswer() {
+        const currentQuestion = quizGenerator.getCurrentQuestion();
+        if (!currentQuestion) return;
+        const answer = this.getUserAnswer(currentQuestion);
+        if (answer === null || answer === undefined || answer === '') {
+            this.readQuestion(currentQuestion);
+            return;
+        }
+        if (currentQuestion.type === 'mcq') {
+            const optText = currentQuestion.options[parseInt(answer, 10)] ?? '';
+            voiceController.speak(`Your selected answer is: ${optText}`);
+        } else {
+            voiceController.speak(`Your answer is: ${answer}`);
+        }
+    }
+
     setLoading(isLoading) {
         const buttons = document.querySelectorAll('button');
         buttons.forEach(button => {
@@ -348,6 +417,30 @@ class QuizUI {
             document.body.style.cursor = 'wait';
         } else {
             document.body.style.cursor = 'default';
+        }
+    }
+
+    toggleVoiceInput() {
+        if (!this.voiceInputButton) return;
+        if (voiceController.isListening) {
+            voiceController.stopListening();
+            this.voiceInputButton.classList.remove('pulsing');
+            this.listeningIndicator?.classList.add('hidden');
+            return;
+        }
+        const started = voiceController.startListening();
+        if (started) {
+            this.voiceInputButton.classList.add('pulsing');
+            this.listeningIndicator?.classList.remove('hidden');
+            const topicInput = document.getElementById('topic');
+            topicInput?.classList.add('listening');
+            voiceController.setOnResultCallback((text) => {
+                const topicInput = document.getElementById('topic');
+                if (topicInput) topicInput.value = text;
+                this.voiceInputButton.classList.remove('pulsing');
+                this.listeningIndicator?.classList.add('hidden');
+                topicInput?.classList.remove('listening');
+            });
         }
     }
 }
