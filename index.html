@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div id="quiz-container">
     <div class="container">
         <header>
             <h1>Quizify AI</h1>
@@ -87,9 +88,19 @@
         </main>
     </div>
 
+    <!-- Voice Wave -->
+    <div class="voice-wave" id="voice-wave">
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+    </div>
+
     <script src="voice.js" type="module"></script>
-    <script src="quiz.js" type="module"></script>
     <script src="ui.js" type="module"></script>
     <script src="leaderboard.js" type="module"></script>
+    <script type="module" src="animations.js"></script>
+    <script type="module" src="quiz.js"></script>
 </body>
 </html>
