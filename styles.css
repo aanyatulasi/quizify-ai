@@ -338,6 +338,179 @@ input[type="text"].listening {
     color: var(--secondary);
 }
 
+/* Animation Container */
+#quiz-container {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+/* Voice Wave Animation */
+.voice-wave {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-end;
+    height: 2.5rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.voice-wave.active {
+    opacity: 1;
+}
+
+.wave-bar {
+    width: 0.5rem;
+    height: 0.5rem;
+    background: var(--primary);
+    border-radius: 1rem;
+    animation: wave 1.5s ease-in-out infinite;
+}
+
+.wave-bar:nth-child(1) { animation-delay: 0s; }
+.wave-bar:nth-child(2) { animation-delay: 0.2s; }
+.wave-bar:nth-child(3) { animation-delay: 0.4s; }
+.wave-bar:nth-child(4) { animation-delay: 0.6s; }
+.wave-bar:nth-child(5) { animation-delay: 0.8s; }
+
+@keyframes wave {
+    0%, 100% { height: 0.5rem; }
+    50% { height: 2.5rem; }
+}
+
+/* Floating Icons */
+.floating-icons {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.floating-icon {
+    position: absolute;
+    opacity: 0.6;
+    animation: float 15s linear infinite;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.6;
+    }
+    90% {
+        opacity: 0.6;
+    }
+    100% {
+        transform: translateY(-100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Topic-specific Animations */
+.topic-science {
+    --particle-color: #00a8ff;
+    background: linear-gradient(135deg, #0f172a, #1e3a8a);
+    position: relative;
+    overflow: hidden;
+}
+
+.topic-science::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(circle at 20% 30%, var(--particle-color) 2px, transparent 2px),
+        radial-gradient(circle at 80% 70%, var(--particle-color) 2px, transparent 2px),
+        radial-gradient(circle at 40% 60%, var(--particle-color) 2px, transparent 2px);
+    background-size: 200px 200px;
+    animation: moveParticles 20s linear infinite;
+    opacity: 0.2;
+    z-index: 0;
+}
+
+.topic-history {
+    --glow-color: #ffd700;
+    background: linear-gradient(135deg, #422006, #92400e);
+    position: relative;
+    overflow: hidden;
+}
+
+.topic-history::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    right: -50%;
+    bottom: -50%;
+    background: radial-gradient(circle at center, transparent 0%, var(--glow-color) 70%);
+    opacity: 0.1;
+    animation: rotateGlow 30s linear infinite;
+    z-index: 0;
+}
+
+.topic-pop-culture {
+    background: linear-gradient(135deg, #4c1d95, #7e22ce);
+    position: relative;
+    overflow: hidden;
+}
+
+.topic-pop-culture::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(circle at 10% 20%, #f0abfc 1px, transparent 1px),
+        radial-gradient(circle at 90% 80%, #c084fc 1px, transparent 1px),
+        radial-gradient(circle at 30% 50%, #e879f9 1px, transparent 1px);
+    background-size: 100px 100px;
+    animation: sparkle 15s linear infinite;
+    opacity: 0.3;
+    z-index: 0;
+}
+
+@keyframes moveParticles {
+    from { background-position: 0 0; }
+    to { background-position: 200px 200px; }
+}
+
+@keyframes rotateGlow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes sparkle {
+    0% { background-position: 0 0, 0 0, 0 0; }
+    100% { background-position: 100px 100px, -100px -100px, 0 100px; }
+}
+
+/* Make sure content is above animations */
+.container {
+    position: relative;
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.95);
+}
+
 /* Leaderboard */
 .leaderboard {
     display: none;
